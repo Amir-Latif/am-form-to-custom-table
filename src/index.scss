@@ -1,0 +1,51 @@
+// General
+h1 {
+    margin-bottom: 1rem !important;
+}
+
+
+// form
+.flex-form {
+    margin-bottom: 1.5rem;
+
+    @media screen and (min-width: 992px) {
+        display: flex;
+        align-items: center;
+        
+        // Removing some Bootstrap CSS
+        .form-control {
+            width: initial;
+        }
+        .form-label {
+            margin-bottom: initial;
+        }
+        input[type=checkbox] {
+            width: 1rem;
+        }
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    label, input, select {
+        margin: 1rem 1rem 0 0;
+    }
+}
+
+.flex {
+    display: flex;
+    
+    @media screen and (min-width: 992px) {
+        display: block;
+    }
+
+    button {
+        flex-basis: 50%;
+        margin: 1rem;
+
+        @media screen and (min-width: 992px) {
+            width: 8rem;
+        }
+    }
+}

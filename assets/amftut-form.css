@@ -1,0 +1,7 @@
+#add-feedback {
+    margin-bottom: 1.5em;
+}
+
+#add-feedback .form-group,  #add-feedback .form-check{
+    margin-bottom: 1rem;
+}

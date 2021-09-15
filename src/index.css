@@ -1,0 +1,48 @@
+h1 {
+  margin-bottom: 1rem !important;
+}
+
+.flex-form {
+  margin-bottom: 1.5rem;
+}
+@media screen and (min-width: 992px) {
+  .flex-form {
+    display: flex;
+    align-items: center;
+  }
+  .flex-form .form-control {
+    width: initial;
+  }
+  .flex-form .form-label {
+    margin-bottom: initial;
+  }
+  .flex-form input[type=checkbox] {
+    width: 1rem;
+  }
+}
+.flex-form label {
+  font-weight: bold;
+}
+.flex-form label, .flex-form input, .flex-form select {
+  margin: 1rem 1rem 0 0;
+}
+
+.flex {
+  display: flex;
+}
+@media screen and (min-width: 992px) {
+  .flex {
+    display: block;
+  }
+}
+.flex button {
+  flex-basis: 50%;
+  margin: 1rem;
+}
+@media screen and (min-width: 992px) {
+  .flex button {
+    width: 8rem;
+  }
+}
+
+/*# sourceMappingURL=index.css.map */
