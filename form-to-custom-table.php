@@ -61,7 +61,7 @@ function amftutCreateTableCallback()
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
     for ($i = 1; $i <= (count($_POST) - 1) / 3; $i++) {
-        $table_columns .= "\n" . str_replace(' ', '_', $_POST["field-$i-name"]);
+        $table_columns .= "\n" . strtolower(str_replace(' ', '_', $_POST["field-$i-name"]));
 
         switch ($_POST["field-$i-type"]) {
             case 'Short Text':
@@ -122,29 +122,35 @@ add_shortcode('amftut_display_form', 'amftutDisplayForm');
  Form Action
 ======================================================= */
 
-function postDataToTable()
+function amftutPostDataCallback()
 {
     global $wpdb;
     $table_name = $wpdb->prefix . 'amftut_custom_table';
+    $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name';");
+    $fields_count = $wpdb->query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wp_amftut_custom_table';");
 
-    function getName($order)
-    {
-        return str_replace(' ', '-', strtolower(trim(get_option('amftut_' . $order . '_input_name'))));
+    $insertion_array = array();
+    for ($i = 1; $i < $fields_count; $i++) {
+        $field = $table_columns[$i]->COLUMN_NAME;
+        if ($table_columns[$i]->DATA_TYPE === 'tinyint') {
+            $insertion_array[$field] = $_POST[$field] === 1 ? 1 : 0;
+        } else $insertion_array[$field] = $_POST[$field];
     }
 
-    $wpdb->insert($table_name, array(
-        'author' => $_POST[getName('first')],
-        'email' => $_POST[getName('second')],
-        'anonymously' => $_POST[getName('sixth')] ? 1 : 0,
-        'career' => $_POST[getName('third')],
-        'years_of_experience' => $_POST[getName('fourth')],
-        'feedback' => $_POST[getName('fifth')]
-    ), array(
-        '%s', '%s', '%d', '%s', '%s', '%d', '%s'
-    ));
-}
-if (isset($_POST['submit'])) postDataToTable();
+    $data_type_array = array();
+    for ($i = 1; $i < $fields_count; $i++) {
+        $type = $table_columns[$i]->DATA_TYPE;
+        if ($type === 'int' || $type === 'tinyint') {
+            array_push($data_type_array, '%d');
+        } elseif ($type === 'tinytext' || $type === 'longtext') {
+            array_push($data_type_array, '%s');
+        }
+    }
 
+    $wpdb->insert($table_name, $insertion_array, $data_type_array);
+}
+add_action('wp_ajax_nopriv_amftutPostData', 'amftutPostDataCallback');
+add_action('wp_ajax_amftutPostData', 'amftutPostDataCallback');
 
 /* =======================================================
 Adding the CSS/JS
@@ -157,9 +163,8 @@ function amftutAddScripts()
     if (is_singular() && has_shortcode($GLOBALS['post']->post_content, 'amftut_display_form')) {
         wp_enqueue_style('amftutFormCss', $plugin_path . 'assets/amftut-form.css', array(), time());
         wp_enqueue_script('amftutFormJs', $plugin_path . 'assets/amftut-form.js', null, time(), true);
-    }
-
-    elseif (is_admin()) {
+        wp_localize_script('amftutFormJs', 'object', array('ajaxUrl' => admin_url('admin-ajax.php')));
+    } elseif (is_admin()) {
         wp_enqueue_style('amftutCss', $plugin_path . 'build/index.css', null, time());
         wp_enqueue_script('amftutReactJs', $plugin_path . 'build/index.js', array('wp-element'), time(), true);
         wp_localize_script('amftutReactJs', 'object', array('ajaxUrl' => admin_url('admin-ajax.php')));
