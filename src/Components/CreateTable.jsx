@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Button } from 'react-bootstrap';
 
-const ajaxUrl = object.ajaxUrl;
+const ajaxUrl = passedObject.ajaxUrl;
 
 const postData = async (e) => {
     e.preventDefault();

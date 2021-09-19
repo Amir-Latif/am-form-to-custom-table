@@ -45,4 +45,12 @@ h1 {
   }
 }
 
+#data-retrieval table {
+  text-align: center;
+  width: 250vw;
+}
+#data-retrieval .btn {
+  font-size: 1.2rem !important;
+}
+
 /*# sourceMappingURL=index.css.map */

@@ -4,7 +4,7 @@ h1 {
 }
 
 
-// form
+// form to create table
 .flex-form {
     margin-bottom: 1.5rem;
 
@@ -47,5 +47,18 @@ h1 {
         @media screen and (min-width: 992px) {
             width: 8rem;
         }
+    }
+}
+
+
+// data retrieval page
+#data-retrieval {
+    table {
+        text-align: center;
+        width: 250vw;
+    }
+
+    .btn {
+        font-size: 1.2rem !important;
     }
 }

@@ -83,14 +83,13 @@ function amftutCreateTableCallback()
             default:
                 break;
         };
-        $table_columns .= $_POST["field-$i-mandatory"] ? "NOT NULL," : ",";
+        $table_columns .= $_POST["field-$i-mandatory"] ? "NOT NULL," : "NULL,";
     }
 
     $sql = "CREATE TABLE $table_name (
 $table_columns
 PRIMARY KEY (id)
     ) $charset_collate;";
-    echo $sql;
     dbDelta($sql);
 
     wp_die();
@@ -100,9 +99,9 @@ add_action('wp_ajax_amftutCreateTable', 'amftutCreateTableCallback');
 
 
 function amftutReadTable()
-{
-    include('templates/amftut-data-retrieval-page.php');
-}
+{ ?>
+    <div class="wrap" id="amftut-react"></div>
+<?php }
 
 
 /* =======================================================
@@ -127,22 +126,19 @@ function amftutPostDataCallback()
     global $wpdb;
     $table_name = $wpdb->prefix . 'amftut_custom_table';
     $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name';");
-    $fields_count = $wpdb->query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wp_amftut_custom_table';");
 
     $insertion_array = array();
-    for ($i = 1; $i < $fields_count; $i++) {
+    for ($i = 1; $i < count($table_columns); $i++) {
         $field = $table_columns[$i]->COLUMN_NAME;
-        if ($table_columns[$i]->DATA_TYPE === 'tinyint') {
-            $insertion_array[$field] = $_POST[$field] === 1 ? 1 : 0;
-        } else $insertion_array[$field] = $_POST[$field];
+        $insertion_array[$field] = $_POST[$field];
     }
 
     $data_type_array = array();
-    for ($i = 1; $i < $fields_count; $i++) {
+    for ($i = 1; $i < count($table_columns); $i++) {
         $type = $table_columns[$i]->DATA_TYPE;
         if ($type === 'int' || $type === 'tinyint') {
             array_push($data_type_array, '%d');
-        } elseif ($type === 'tinytext' || $type === 'longtext') {
+        } elseif ($type === 'tinytext' || $type === 'mediumtext' || $type === 'longtext') {
             array_push($data_type_array, '%s');
         }
     }
@@ -152,6 +148,23 @@ function amftutPostDataCallback()
 add_action('wp_ajax_nopriv_amftutPostData', 'amftutPostDataCallback');
 add_action('wp_ajax_amftutPostData', 'amftutPostDataCallback');
 
+
+/* =======================================================
+ Post drafts to WP posts
+======================================================= */
+
+function amftutPostToWP()
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amftut_custom_table';
+    foreach ($_POST as $key => $value) {
+        if ($value) $wpdb->update($table_name, array('posted' => 1), array('id' => $key));
+    }
+}
+add_action('wp_ajax_nopriv_amftutReadTable', 'amftutPostToWP');
+add_action('wp_ajax_amftutReadTable', 'amftutPostToWP');
+
+
 /* =======================================================
 Adding the CSS/JS
 ======================================================= */
@@ -159,6 +172,10 @@ Adding the CSS/JS
 function amftutAddScripts()
 {
     $plugin_path = plugin_dir_url(__FILE__);
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amftut_custom_table';
+    $table_columns = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name';");
+    $table_records = $wpdb->get_results("SELECT * FROM $table_name");
 
     if (is_singular() && has_shortcode($GLOBALS['post']->post_content, 'amftut_display_form')) {
         wp_enqueue_style('amftutFormCss', $plugin_path . 'assets/amftut-form.css', array(), time());
@@ -167,7 +184,11 @@ function amftutAddScripts()
     } elseif (is_admin()) {
         wp_enqueue_style('amftutCss', $plugin_path . 'build/index.css', null, time());
         wp_enqueue_script('amftutReactJs', $plugin_path . 'build/index.js', array('wp-element'), time(), true);
-        wp_localize_script('amftutReactJs', 'object', array('ajaxUrl' => admin_url('admin-ajax.php')));
+        wp_localize_script('amftutReactJs', 'passedObject', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'tableRecords' => $table_records,
+            'tableColumns' => $table_columns
+        ));
     }
 }
 add_action('admin_enqueue_scripts', 'amftutAddScripts');
