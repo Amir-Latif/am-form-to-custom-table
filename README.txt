@@ -1,4 +1,4 @@
-Plugin Name: Form To Custom Table
+Plugin Name: AM - Form To Custom Table
 Plugin URI: https://amir-latif.github.io/portfolio/wp-plugins/amftut
 Description: Captures data from the reader and stores it to a custom databse table
 Version: 1.0

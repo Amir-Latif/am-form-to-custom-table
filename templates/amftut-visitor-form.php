@@ -7,6 +7,9 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
 <form id="add-feedback" method="POST">
     <?php
     for ($i = 1; $i < count($table_columns); $i++) {
+        // Escapse the posted column from the form
+        if ($table_columns[$i]->COLUMN_NAME === "posted") break;
+
         $field_id = strtolower($table_columns[$i]->COLUMN_NAME);
         $field_name = ucwords(str_replace('_', ' ', $table_columns[$i]->COLUMN_NAME));
         $required = $table_columns[$i]->IS_NULLABLE === "NO" ? "required" : "";
@@ -25,7 +28,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
 
                 <div class="form-group">
                     <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
-                    <textarea name="<?php echo $field_id ?>" id="<?php echo $field_id ?>" class="form-control" cols="80" rows="5" <?php echo $required ?>></textarea>
+                    <textarea name="<?php echo $field_id ?>" id="ckeditor-<?php echo $field_id ?>" class="form-control ckeditor"></textarea>
                 </div>
             <?php
                 break;
@@ -33,7 +36,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
             case 'longtext': ?>
                 <div class="form-group">
                     <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
-                    <textarea name="<?php echo $field_id ?>" id="<?php echo $field_id ?>" class="form-control" cols="80" rows="10" <?php echo $required ?>></textarea>
+                    <textarea name="<?php echo $field_id ?>" id="ckeditor-<?php echo $field_id ?>" class="form-control ckeditor"></textarea>
                 </div>
             <?php
                 break;
@@ -61,3 +64,15 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
     ?>
     <button type="submit" class="btn btn-danger">Submit</button>
 </form>
+<script src="https://cdn.ckeditor.com/ckeditor5/29.2.0/classic/ckeditor.js"></script>
+<script>
+    const editors = document.querySelectorAll('.ckeditor');
+
+    for (let i = 0; i < editors.length; i++) {
+        ClassicEditor
+            .create(document.querySelector(`#ckeditor-${editors[i].name}`))
+            .catch(error => {
+                console.error(error);
+            });
+    }
+</script>
