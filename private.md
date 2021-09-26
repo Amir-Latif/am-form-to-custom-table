@@ -1,0 +1,1 @@
+In post-form.php I used the equal operator "==" instead of "===" because I found out that $record->id is string and I don't know why this happens

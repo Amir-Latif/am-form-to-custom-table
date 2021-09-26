@@ -132,6 +132,7 @@ function amftut_post_data_callback()
         $field = $table_columns[$i]->COLUMN_NAME;
         $insertion_array[$field] = $_POST[$field];
     }
+    $insertion_array['date'] = date('d-m-Y');
     $insertion_array['posted'] = 0;
 
     $data_type_array = array();
@@ -143,6 +144,7 @@ function amftut_post_data_callback()
             array_push($data_type_array, '%s');
         }
     }
+    array_push($data_type_array, '%s');
     array_push($data_type_array, '%d');
 
     $wpdb->insert($table_name, $insertion_array, $data_type_array);
@@ -158,13 +160,51 @@ add_action('wp_ajax_amftutPostData', 'amftut_post_data_callback');
 function amftut_post_to_wp()
 {
     global $wpdb;
+    $labels = array();
     $table_name = $wpdb->prefix . 'amftut_custom_table';
+    $sql_query = "SELECT * FROM $table_name WHERE id IN (";
     foreach ($_POST as $key => $value) {
-        if ($value) $wpdb->update($table_name, array('posted' => 1), array('id' => $key));
+        if ($key === "key") {
+            $sql_query .= $value . ', ';
+            $labels[$value] = "";
+        } elseif ($key === 'label') {
+            end($labels);
+            $labels[key($labels)] = $value;
+        };
+    }
+    $sql_query .= "'')";
+    $table_records = $wpdb->get_results($sql_query);
+    function get_post_content($record)
+    {
+        session_start();
+        $_SESSION['var'] = $record;
+
+        ob_start();
+        include('templates/post-form.php');
+        return ob_get_clean();
+    }
+
+    foreach ($table_records as $record) {
+        wp_insert_post(array(
+            'id' => $record->id,
+            'post_date' => $record->date,
+            'post_content' => get_post_content($record),
+            'post_title' => $record->hide_my_name === 1 ? $record->title : $record->your_name . ' - ' . $record->title,
+            'post_status' => 'publish',
+            'tags_input' => array($labels[$record->id]),
+        ));
+        $wpdb->update(
+            $table_name,
+            array(
+                'posted' => 1,
+                'label' => $labels[$record->id]
+            ),
+            array('id' => $record->id)
+        );
     }
 }
-add_action('wp_ajax_nopriv_amftut_read_table', 'amftut_post_to_wp');
-add_action('wp_ajax_amftut_read_table', 'amftut_post_to_wp');
+add_action('wp_ajax_nopriv_amftutReadTable', 'amftut_post_to_wp');
+add_action('wp_ajax_amftutReadTable', 'amftut_post_to_wp');
 
 
 /* =======================================================

@@ -11,9 +11,14 @@ const changeStatus = async (e) => {
     let data = new URLSearchParams();
     data.append('action', 'amftutReadTable');
 
+    // Send the IDs of the checked rows in the table
     const formValues = document.querySelector('form');
-    for (let i = 0; i < formValues.length - 1; i++) {
-        data.append(formValues[i].name, formValues[i].checked);
+
+    for (let i = 0; i < formValues.length - 1; i += 2) {
+        if (formValues[i].checked) {
+            data.append('key', formValues[i].name);
+            data.append('label', formValues[i + 1].value);
+        };
     }
 
     await fetch(ajaxUrl, {
@@ -36,6 +41,7 @@ const capitalize = (phrase) => {
 
 
 function ReadTable() {
+    const [requiredInput, updateRequried] = React.useState(false);
 
     return (
         <React.Fragment>
@@ -46,34 +52,42 @@ function ReadTable() {
                         {tableRecords.length === 0 ?
                             <h3>No data available in the table</h3>
                             :
-                            <Table striped hover bordered className="border border-primary align-middle">
-                                <thead className="align-middle table-dark">
-                                    <tr>
-                                        <th>Check for posting</th>
-                                        {tableColumns.map((item, index) => (
-                                            <th scope="col" key={index}>
-                                                {capitalize(item.COLUMN_NAME)}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {tableRecords.map((record, recordIndex) => (
-                                        <tr key={recordIndex}>
-                                            <td><input type="checkbox" name={record.id} id={record.id} /></td>
-                                            {tableColumns.map((column, columnIndex) => (
-                                                column.COLUMN_NAME === 'id' ?
-                                                    <th key={columnIndex}>{record[column.COLUMN_NAME]}</th>
-                                                    :
-                                                    <td key={columnIndex}>{record[column.COLUMN_NAME]}</td>
-
+                            <>
+                                <Table striped hover bordered className="border border-primary align-middle">
+                                    <thead className="align-middle table-dark">
+                                        <tr>
+                                            <th>Check for posting</th>
+                                            {tableColumns.map((item, index) => (
+                                                <th scope="col" key={index}>
+                                                    {capitalize(item.COLUMN_NAME)}
+                                                </th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                                    </thead>
+                                    <tbody>
+                                        {tableRecords.map((record, recordIndex) => (
+                                            <tr key={recordIndex}>
+                                                <td>
+                                                    <input type="checkbox" name={record.id} id={record.id}
+                                                        onChange={e => e.target.value ? updateRequried(true) : updateRequried(false)} />
+                                                </td>
+                                                <td><input type="text" name={record.id + "-label"} id={record.id + "-label"} required={requiredInput} /></td>
+
+                                                {tableColumns.map((column, columnIndex) => (
+                                                    column.COLUMN_NAME !== 'label' && (
+                                                        column.COLUMN_NAME === 'id' ?
+                                                            <th key={columnIndex}>{record[column.COLUMN_NAME]}</th>
+                                                            :
+                                                            <td key={columnIndex}>{record[column.COLUMN_NAME]}</td>
+
+                                                    )))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                                <Button type="submit" className="btn btn-primary mt-4">Post Selections</Button>
+                            </>
                         }
-                        <Button type="submit" className="btn btn-primary mt-4">Post Selections</Button>
                     </Form>
                 </div>
             </div>

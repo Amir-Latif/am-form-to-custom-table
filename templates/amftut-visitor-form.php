@@ -6,9 +6,9 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
 
 <form id="add-feedback" method="POST">
     <?php
-    for ($i = 1; $i < count($table_columns); $i++) {
+    for ($i = 2; $i < count($table_columns); $i++) {
         // Escapse the posted column from the form
-        if ($table_columns[$i]->COLUMN_NAME === "posted") break;
+        if ($table_columns[$i]->COLUMN_NAME === "date" || $table_columns[$i]->COLUMN_NAME === "posted") break;
 
         $field_id = strtolower($table_columns[$i]->COLUMN_NAME);
         $field_name = ucwords(str_replace('_', ' ', $table_columns[$i]->COLUMN_NAME));
@@ -18,7 +18,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
             case 'tinytext': ?>
 
                 <div class="form-group">
-                    <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
+                    <label for="<?php echo $field_id ?>" class="form-label h4"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
                     <input id="<?php echo $field_id ?>" class="form-control" name="<?php echo $field_id ?>" type="text" size="255" aria-describedby="<?php echo $field_id ?>" <?php $required ?>>
                 </div>
             <?php
@@ -27,7 +27,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
             case 'mediumtext': ?>
 
                 <div class="form-group">
-                    <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
+                    <label for="<?php echo $field_id ?>" class="form-label h4"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
                     <textarea name="<?php echo $field_id ?>" id="ckeditor-<?php echo $field_id ?>" class="form-control ckeditor"></textarea>
                 </div>
             <?php
@@ -35,7 +35,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
 
             case 'longtext': ?>
                 <div class="form-group">
-                    <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
+                    <label for="<?php echo $field_id ?>" class="form-label h4"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
                     <textarea name="<?php echo $field_id ?>" id="ckeditor-<?php echo $field_id ?>" class="form-control ckeditor"></textarea>
                 </div>
             <?php
@@ -43,7 +43,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
 
             case 'int': ?>
                 <div class="form-group">
-                    <label for="<?php echo $field_id ?>" class="form-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
+                    <label for="<?php echo $field_id ?>" class="form-label h4"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
                     <input id="<?php echo $field_id ?>" class="form-control" name="<?php echo $field_id ?>" <?php echo $required ?> type="number" value="1" min="1">
                 </div>
             <?php
