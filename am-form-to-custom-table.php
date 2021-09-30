@@ -174,7 +174,8 @@ function amftut_post_to_wp()
     }
     $sql_query .= "'')";
     $table_records = $wpdb->get_results($sql_query);
-    function get_post_content($record)
+
+    function amftut_get_post_content($record)
     {
         session_start();
         $_SESSION['var'] = $record;
@@ -184,15 +185,26 @@ function amftut_post_to_wp()
         return ob_get_clean();
     }
 
+    function amftut_get_post_excerpt($content)
+    {
+        $start = strpos($content, "<!-- Excerpt Start -->") + strlen("<!-- Excerpt Start -->");
+        $end = strpos($content, "<!-- Excerpt End -->") - 1;
+        return substr($content, $start, $end);
+    }
+
     foreach ($table_records as $record) {
+        $content = amftut_get_post_content($record);
+echo amftut_get_post_excerpt($content);
         wp_insert_post(array(
             'id' => $record->id,
             'post_date' => $record->date,
-            'post_content' => get_post_content($record),
+            'post_content' => $content,
+            'post_excerpt' => amftut_get_post_excerpt($content),
             'post_title' => $record->hide_my_name === 1 ? $record->title : $record->your_name . ' - ' . $record->title,
             'post_status' => 'publish',
             'tags_input' => array($labels[$record->id]),
         ));
+        
         $wpdb->update(
             $table_name,
             array(

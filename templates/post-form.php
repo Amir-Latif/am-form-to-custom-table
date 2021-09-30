@@ -3,6 +3,7 @@ session_start();
 $record = $_SESSION['var'];
 ?>
 <article>
+    <!-- Excerpt Start -->
     <div class="card text-dark bg-info mb-3" style="max-width: 18rem;">
         <div class="card-body">
             <?php if ($record->hide_my_name == 0) { ?>
@@ -16,6 +17,7 @@ $record = $_SESSION['var'];
             <?php } ?>
         </div>
     </div>
+    <!-- Excerpt End -->
     <div>
         <h2>Role Description</h2>
         <p>

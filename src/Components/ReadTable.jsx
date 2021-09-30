@@ -30,7 +30,7 @@ const changeStatus = async (e) => {
         referrerPolicy: 'strict-origin-when-cross-origin',
         body: data
     })
-        .then(() => window.location.reload())
+        .then(window.location.reload())
 }
 
 const capitalize = (phrase) => {
@@ -41,7 +41,7 @@ const capitalize = (phrase) => {
 
 
 function ReadTable() {
-    const [requiredInput, updateRequried] = React.useState(false);
+    const [requiredInput, updateRequried] = React.useState([]);
 
     return (
         <React.Fragment>
@@ -69,9 +69,9 @@ function ReadTable() {
                                             <tr key={recordIndex}>
                                                 <td>
                                                     <input type="checkbox" name={record.id} id={record.id}
-                                                        onChange={e => e.target.value ? updateRequried(true) : updateRequried(false)} />
+                                                        onChange={e => e.target.checked ? updateRequried([...requiredInput, record.id]) : updateRequried([...requiredInput.filter(e => e !== record.id)])} />
                                                 </td>
-                                                <td><input type="text" name={record.id + "-label"} id={record.id + "-label"} required={requiredInput} /></td>
+                                                <td><input type="text" name={record.id + "-label"} id={record.id + "-label"} required={[...requiredInput].includes(record.id)} /></td>
 
                                                 {tableColumns.map((column, columnIndex) => (
                                                     column.COLUMN_NAME !== 'label' && (
