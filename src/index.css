@@ -45,6 +45,12 @@ h1 {
   }
 }
 
+@media screen and (min-width: 992px) {
+  #submission-btns button {
+    width: 11rem;
+  }
+}
+
 #data-retrieval table {
   text-align: center;
   width: 250vw;

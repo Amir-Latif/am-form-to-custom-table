@@ -2,7 +2,7 @@
   "name": "am-form-to-custom-table",
   "version": "1.0.0",
   "description": "A plugin to take input data from reader via a form, creates a custom database table, stores the reader data in it and displays the reader data to the admin",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "start": "wp-scripts start",
     "build": "wp-scripts build",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "form-to-custom-table"
+    "url": "am-form-to-custom-table"
   },
   "author": "Amir Latif",
   "license": "GPL",

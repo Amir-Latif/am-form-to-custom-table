@@ -18,24 +18,26 @@ $record = $_SESSION['var'];
         </div>
     </div>
     <!-- Excerpt End -->
-    <div>
-        <h2>Role Description</h2>
-        <p>
-            <?php echo $record->role_description ?>
-        </p>
-    </div>
+    <section>
+        <div>
+            <h2>Role Description</h2>
+            <p>
+                <?php echo $record->role_description ?>
+            </p>
+        </div>
 
-    <div>
-        <h2>Feedback</h2>
-        <p>
-            <?php echo $record->feedback ?>
-        </p>
-    </div>
+        <div>
+            <h2>Feedback</h2>
+            <p>
+                <?php echo $record->feedback ?>
+            </p>
+        </div>
 
-    <div>
-        <h2>Advice For Beginners</h2>
-        <p>
-            <?php echo $record->advice_for_beginners ?>
-        </p>
-    </div>
+        <div>
+            <h2>Advice For Beginners</h2>
+            <p>
+                <?php echo $record->advice_for_beginners ?>
+            </p>
+        </div>
+    </section>
 </article>

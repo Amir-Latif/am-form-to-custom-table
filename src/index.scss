@@ -49,6 +49,13 @@ h1 {
         }
     }
 }
+#submission-btns{
+    button {
+        @media screen and (min-width: 992px) {
+            width: 11rem;
+        }
+    }
+}
 
 
 // data retrieval page

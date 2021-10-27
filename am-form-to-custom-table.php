@@ -91,7 +91,6 @@ $table_columns
 PRIMARY KEY (id)
     ) $charset_collate;";
     dbDelta($wpdb->prepare($sql, array($table_name)));
-
     wp_die();
 }
 add_action('wp_ajax_nopriv_amftutCreateTable', 'amftut_create_table_callback');
@@ -157,7 +156,7 @@ add_action('wp_ajax_amftutPostData', 'amftut_post_data_callback');
  Post drafts to WP posts
 ======================================================= */
 
-function amftut_post_to_wp()
+function amftut_post_selections()
 {
     global $wpdb;
     $labels = array();
@@ -181,7 +180,7 @@ function amftut_post_to_wp()
         $_SESSION['var'] = $record;
 
         ob_start();
-        include('templates/post-form.php');
+        include('templates/amtfut-post-form.php');
         return ob_get_clean();
     }
 
@@ -194,7 +193,7 @@ function amftut_post_to_wp()
 
     foreach ($table_records as $record) {
         $content = amftut_get_post_content($record);
-echo amftut_get_post_excerpt($content);
+
         wp_insert_post(array(
             'id' => $record->id,
             'post_date' => $record->date,
@@ -204,7 +203,7 @@ echo amftut_get_post_excerpt($content);
             'post_status' => 'publish',
             'tags_input' => array($labels[$record->id]),
         ));
-        
+
         $wpdb->update(
             $table_name,
             array(
@@ -215,8 +214,24 @@ echo amftut_get_post_excerpt($content);
         );
     }
 }
-add_action('wp_ajax_nopriv_amftutReadTable', 'amftut_post_to_wp');
-add_action('wp_ajax_amftutReadTable', 'amftut_post_to_wp');
+add_action('wp_ajax_nopriv_amftutPostSelections', 'amftut_post_selections');
+add_action('wp_ajax_amftutPostSelections', 'amftut_post_selections');
+
+
+/* =======================================================
+ Delete Selected drafts from AMFTUT Custom Table
+======================================================= */
+function amftut_delete_selections()
+{
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'amftut_custom_table';
+    foreach ($_POST as $key => $value) {
+        if ($key === "key") $wpdb->delete($table_name, array('id'=>$value));
+    }
+    wp_die();
+}
+add_action('wp_ajax_nopriv_amftutDeleteSelections', 'amftut_delete_selections');
+add_action('wp_ajax_amftutDeleteSelections', 'amftut_delete_selections');
 
 
 /* =======================================================

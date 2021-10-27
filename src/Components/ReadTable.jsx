@@ -5,11 +5,13 @@ const ajaxUrl = passedObject.ajaxUrl;
 const tableRecords = passedObject.tableRecords;
 const tableColumns = passedObject.tableColumns;
 
-const changeStatus = async (e) => {
+
+
+const postSelections = async (e) => {
     e.preventDefault();
 
     let data = new URLSearchParams();
-    data.append('action', 'amftutReadTable');
+    data.append('action', 'amftutPostSelections');
 
     // Send the IDs of the checked rows in the table
     const formValues = document.querySelector('form');
@@ -33,6 +35,35 @@ const changeStatus = async (e) => {
         .then(window.location.reload())
 }
 
+const deleteSelections = async (e) => {
+    e.preventDefault();
+
+    let data = new URLSearchParams();
+    data.append('action', 'amftutDeleteSelections');
+
+    // Send the IDs of the checked rows in the table
+    const formValues = document.querySelector('form');
+
+    for (let i = 0; i < formValues.length - 1; i += 2) {
+        if (formValues[i].checked) {
+            data.append('key', formValues[i].name);
+        };
+    }
+
+    await fetch(ajaxUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Cache-Control': 'no-cache',
+        },
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        body: data
+    })
+        .then(window.location.reload())
+}
+
+
+
 const capitalize = (phrase) => {
     const arr = phrase.split('_');
     const newArr = arr.map(element => element[0].toUpperCase() + element.slice(1));
@@ -47,7 +78,7 @@ function ReadTable() {
         <React.Fragment>
             <div className="wrap">
                 <div id="data-retrieval" className="table-responsive">
-                    <Form onSubmit={e => changeStatus(e)}>
+                    <Form onSubmit={e => e.preventDefault()}>
                         <h1>The Data Obtained From The Customer</h1>
                         {tableRecords.length === 0 ?
                             <h3>No data available in the table</h3>
@@ -85,7 +116,10 @@ function ReadTable() {
                                         ))}
                                     </tbody>
                                 </Table>
-                                <Button type="submit" className="btn btn-primary mt-4">Post Selections</Button>
+                                <div id="submission-btns" class="flex">
+                                    <Button type="submit" className="btn btn-primary mt-4" onClick={e => postSelections(e)}>Post Selections</Button>
+                                    <Button type="submit" className="btn btn-primary mt-4" onClick={e => deleteSelections(e)}>Delete Selections</Button>
+                                </div>
                             </>
                         }
                     </Form>
