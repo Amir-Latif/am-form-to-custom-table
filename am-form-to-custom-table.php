@@ -225,9 +225,14 @@ function amftut_delete_selections()
 {
     global $wpdb;
     $table_name = $wpdb->prefix . 'amftut_custom_table';
+
+    $sql_query = "DELETE FROM $table_name WHERE id IN (";
     foreach ($_POST as $key => $value) {
-        if ($key === "key") $wpdb->delete($table_name, array('id'=>$value));
+        if ($key === "key") $sql_query .= $value . ", ";
     }
+    $sql_query .= "'')";
+
+    $wpdb->query($sql_query);
     wp_die();
 }
 add_action('wp_ajax_nopriv_amftutDeleteSelections', 'amftut_delete_selections');
