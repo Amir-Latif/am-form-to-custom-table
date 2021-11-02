@@ -1,9 +1,9 @@
 <?php
 
 global $wpdb;
-$table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wp_amftut_custom_table';");
+$table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wp_amftut';");
 ?>
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <form id="add-feedback" method="POST">
     <?php
     for ($i = 2; $i < count($table_columns); $i++) {
@@ -50,7 +50,7 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
                 break;
 
             case 'tinyint': ?>
-                <div class="form-check">
+                <div class="form-check d-flex align-content-center">
                     <input id="<?php echo $field_id ?>" name="<?php echo $field_id ?>" class="form-check-input" type="checkbox" <?php echo  $required ?>>
                     <label for="<?php echo $field_id ?>" class="form-check-label"><?php echo $field_name ?> <?php if ($required === "required") echo "*" ?></label>
                 </div>
@@ -76,3 +76,4 @@ $table_columns = $wpdb->get_results("SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE 
             });
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
